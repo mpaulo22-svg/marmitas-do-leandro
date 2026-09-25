@@ -546,6 +546,9 @@ const foto=(id,kind='card')=>{const u=(DATA.cfg.fotos||{})[id];if(u)return u;ret
 
 /* ================= state ================= */
 const DEFAULT_GERAL={margem:.45,imposto:.06,taxa:.03,emb:{P:.55,M:.69,G:.85},oper:{P:.60,M:.80,G:1.00},taxaEntrega:5};
+// Rateio adicional de preparo e montagem por prato M. Escalado pelo tamanho da porção.
+// A operação básica (gás/energia) continua configurável em Custos.
+const PREPARO_EXTRA={bisteca:1.35,'frango-quiabo':1.75,tropeiro:2.60,torresmo:2.65,costelinha:2.05,'bife-acebolado':1.65,milanesa:2.35,'carne-panela':1.80,tilapia:2.25,toscana:1.30,picadinho:1.90,figado:1.45,carreteiro:2.15,feijoada:2.90,'frango-frito':2.40,lombo:2.10,galinhada:1.55,virado:3.50,'moida-batata':1.20,'vaca-atolada':2.25,pernil:2.10,bolonhesa:1.45,calabresa:1.45,mexidao:1.70};
 let DATA={dias:{},meses:{},cfg:{precos:{},geral:clone(DEFAULT_GERAL),fotos:{},praticado:{}}};
 const S={view:'cardapio',cat:'Todos',q:'',cart:[],rec:{id:'bisteca',tam:'M',lote:20},caixaDia:today(),fluxoMes:ym(today()),demo:false,detail:null,detailTam:'M',detailQtd:1,custosCat:'Todas',rankSort:'lucro',pdvCart:[],checkout:{tipo:'retirada',pag:'Pix',cliente:'',fone:'',end:'',obs:'',desc:0},lanc:{tipo:'despesa',status:'pago'}};
 let DB=null, ASSETS=null, storeMode='local';
@@ -559,14 +562,15 @@ function custo(pid,tam){
   const p=PM[pid], g=G(); const linhas=[]; let ing=0;
   for(const [id,q] of Object.entries(p.itens)){const ins=INSUMOS[id];const qt=qtdIns(q,ins.un,tam);const pu=precoIns(id);const c=ins.un==='un'?qt*pu:qt/1000*pu;ing+=c;linhas.push({id,nome:ins.nome,un:ins.un,qt,pu,c,cat:ins.cat})}
   linhas.sort((a,b)=>b.c-a.c);
-  const emb=g.emb[tam], oper=g.oper[tam], total=ing+emb+oper;
+  const emb=g.emb[tam], preparo=(PREPARO_EXTRA[pid]||0)*TAMANHOS[tam].fator;
+  const oper=g.oper[tam]+preparo, total=ing+emb+oper;
   const div=Math.max(.05,1-g.margem-g.imposto-g.taxa);
   const sugerido=Math.max(1,Math.ceil(total/div)-0.10);
   const prat=((DATA.cfg.praticado||{})[pid]||{})[tam];
   const preco=typeof prat==='number'&&prat>0?prat:sugerido;
   const liquido=preco*(1-g.imposto-g.taxa);
   const lucro=liquido-total;
-  return {linhas,ing,emb,oper,total,sugerido,preco,praticado:typeof prat==='number'&&prat>0,lucro,margem:lucro/preco,cmv:ing/preco,banha:linhas.find(l=>l.id==='banha')};
+  return {linhas,ing,emb,oper,preparo,total,sugerido,preco,praticado:typeof prat==='number'&&prat>0,lucro,margem:lucro/preco,cmv:ing/preco,banha:linhas.find(l=>l.id==='banha')};
 }
 const preco=(pid,tam)=>custo(pid,tam).preco;
 
@@ -645,7 +649,7 @@ function todasContas(){const out=[];for(const [m,o] of Object.entries(V().meses)
 function toast(msg,kind){const t=document.createElement('div');t.className='toast'+(kind?' '+kind:'');t.textContent=msg;$('#toasts').appendChild(t);setTimeout(()=>t.remove(),kind==='bad'?4200:2300)}
 
 /* ================= nav ================= */
-const VIEWS=[['cardapio','Cardápio','menu'],['pedidos','Pedidos','orders'],['caixa','Caixa','cash'],['receitas','Receitas','recipe'],['custos','Custos','coins'],['fluxo','Fluxo de caixa','flow'],['painel','Painel','dash']];
+const VIEWS=[['cardapio','Cardápio','menu'],['pedidos','Pedidos','orders'],['caixa','Caixa','cash'],['receitas','Admin','recipe'],['custos','Custos','coins'],['fluxo','Fluxo de caixa','flow'],['painel','Painel','dash']];
 function renderNav(){
   const abertos=vendasDia(today()).filter(v=>['recebido','preparo','pronto'].includes(v.status)).length;
   const b=(id)=>id==='pedidos'&&abertos?`<span class="badge">${abertos}</span>`:'';
@@ -706,9 +710,8 @@ function vCardapio(){
   </div>`;
 }
 function dishCard(p){
-  const c=custo(p.id,'M');
   return `<article class="dish pre" data-dish="${p.id}">
-    <button class="dish-media" data-open="${p.id}" aria-label="Ver ${esc(p.nome)}"><img src="${foto(p.id)}" alt="${esc(p.nome)}" loading="lazy" draggable="false"><span class="tag">${esc(p.tag)}</span><span class="kpi">${Math.round(c.banha?c.banha.qt:0)} g de banha</span></button>
+    <button class="dish-media" data-open="${p.id}" aria-label="Ver ${esc(p.nome)}"><img src="${foto(p.id)}" alt="${esc(p.nome)}" loading="lazy" draggable="false"><span class="tag">${esc(p.tag)}</span></button>
     <div class="dish-body"><h3>${esc(p.nome)}</h3><p>${esc(p.desc)}</p>
     <div class="sizes">${TAMS.map(t=>`<button data-add="${p.id}" data-t="${t}" aria-label="Adicionar ${esc(p.nome)} tamanho ${t}"><b>${t}</b><span>${money(preco(p.id,t)).replace('R$ ','')}</span></button>`).join('')}</div></div>
   </article>`;
@@ -1125,5 +1128,6 @@ $('#themeBtn').addEventListener('click',()=>{const r=document.documentElement;co
 
 <link rel="stylesheet" href="enhancements.css">
 <script src="enhancements.js"></script>
+<script src="admin-update.js"></script>
 </body>
 </html>
