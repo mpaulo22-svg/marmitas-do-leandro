@@ -3,12 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marmitas do Leandro | Comida de verdade todo dia</title>
+<meta name="description" content="Conheça as marmitas do Leandro: cardápio, ingredientes, tamanhos, preparo, ficha técnica e pedidos pelo WhatsApp.">
+<meta property="og:title" content="Marmitas do Leandro">
+<meta property="og:description" content="Comida de verdade todo dia. Escolha sua marmita e peça pelo WhatsApp.">
+<meta property="og:image" content="https://mpaulo22-svg.github.io/marmitas-do-leandro/img/leandro.svg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 40%22%3E%3Cpath d=%22M5 30a16 16 0 0 1 32 0%22 fill=%22none%22 stroke=%22%23F2A33A%22 stroke-width=%224%22/%3E%3Crect x=%222%22 y=%2231%22 width=%2238%22 height=%225%22 rx=%222%22 fill=%22%23F2A33A%22/%3E%3C/svg%3E">
 <style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
-<title>Marmitas do Leandro</title>
-<meta name="description" content="Marmitas feitas na banha de porco — cardápio, caixa, custos e fluxo de caixa.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Caveat:wght@500;700&family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -657,7 +660,7 @@ function demoBanner(){return S.demo?`<div class="demo-banner">${ico('flame')}<sp
 /* ---------- CARDÁPIO ---------- */
 let heroTimer=null;
 function vCardapio(){
-  const hs=['torresmo','bisteca','feijoada','tropeiro','bife-acebolado'];
+  const hs=['torresmo'];
   const hoje=resumoVendas(vendasDia(today()));
   const q=S.q.trim().toLowerCase();
   const match=p=>(!q||(p.nome+' '+p.desc+' '+Object.keys(p.itens).map(i=>INSUMOS[i].nome).join(' ')).toLowerCase().includes(q))&&(S.cat==='Todos'||p.cat===S.cat);
@@ -672,9 +675,9 @@ function vCardapio(){
       <span class="chalk-k">Cardápio de hoje · feito na banha</span>
       <h1>Comida de verdade <em>todo dia</em></h1>
       <span class="rule"></span>
-      <ul class="checks"><li>Tudo feito na banha de porco</li><li>Ingredientes frescos da Ceasa</li><li>Sabor sem complicação</li></ul>
+      <ul class="checks"><li>Ingredientes frescos</li><li>Receitas equilibradas</li><li>Sabor sem complicação</li></ul>
       <p>${PRATOS.length} pratos em três tamanhos, com preço calculado em cima do custo real de cada ingrediente.</p>
-      <div class="row"><button class="btn primary" data-act="scroll-menu">Ver cardápio</button><button class="btn ghostl" data-go="caixa">Abrir o caixa</button></div>
+      <div class="row"><button class="btn primary" data-act="scroll-menu">Ver cardápio</button><button class="btn ghostl" data-act="story">Conheça o Leandro</button></div>
       <div class="hero-stats">
         <div><b class="num">${hoje.marmitas}</b>marmitas hoje</div>
         <div><b class="num">${money(minP)}</b>a partir de</div>
@@ -682,10 +685,9 @@ function vCardapio(){
       </div>
     </div>
     <div class="chef">
-      <img src="img/leandro.jpg" alt="Leandro, de dólmã e avental pretos da casa, mostrando uma marmita de torresmo">
-      <div class="pdia"><div class="ph">${hs.map((id,i)=>`<img src="${foto(id,'card')}" alt="${esc(PM[id].nome)}" data-id="${id}" class="${i===0?'on':''}" ${i?'loading="lazy"':''}>`).join('')}</div>
-        <div class="cap"><div><small>Prato do dia</small><b id="pdia-n">${esc(PM[hs[0]].nome)}</b></div><button class="btn sm primary" data-open="${hs[0]}" id="pdia-b">Ver</button></div>
-        <div class="hero-dots">${hs.map((_,i)=>`<button aria-label="Prato ${i+1}" data-hero="${i}" class="${i===0?'on':''}"></button>`).join('')}</div></div>
+      <img src="img/leandro.svg" alt="Leandro, de dólmã branca e avental verde, segurando uma marmita">
+      <div class="pdia"><button class="ph" data-open="${hs[0]}" aria-label="Abrir a ficha técnica do prato do dia"><img src="${foto(hs[0],'card')}" alt="${esc(PM[hs[0]].nome)}" class="on"></button>
+        <div class="cap"><div><small>Recomendação do chef para hoje</small><b id="pdia-n">${esc(PM[hs[0]].nome)}</b></div><button class="btn sm primary" data-open="${hs[0]}" id="pdia-b">Ver</button></div></div>
     </div>
   </section>
   <div class="facts">
@@ -798,7 +800,7 @@ function vCaixa(){
   </div>
   <div class="split" style="margin-top:16px">
    <div class="card pad"><div class="section-h"><h2 style="font-size:22px">Venda rápida no balcão</h2><span class="muted" style="font-size:13px">Toque no tamanho para somar</span></div>
-    ${isToday?`<div class="pdv-grid">${PRATOS.map(p=>`<div class="pdv-item"><img src="${foto(p.id)}" alt="" loading="lazy"><div class="n">${esc(p.nome)}</div><div class="b">${TAMS.map(t=>`<button data-pdv="${p.id}" data-t="${t}" title="${money(preco(p.id,t))}">${t}</button>`).join('')}</div></div>`).join('')}</div>`:`<div class="empty">A venda rápida funciona só no caixa de hoje.</div>`}
+    ${isToday?`<div class="pdv-grid">${PRATOS.map(p=>`<div class="pdv-item"><button class="photo-open" data-open="${p.id}" aria-label="Abrir ficha técnica de ${esc(p.nome)}"><img src="${foto(p.id)}" alt="${esc(p.nome)}" loading="lazy"></button><button class="name-open" data-open="${p.id}">${esc(p.nome)}</button><div class="b">${TAMS.map(t=>`<button data-pdv="${p.id}" data-t="${t}" title="${money(preco(p.id,t))}">${t}</button>`).join('')}</div></div>`).join('')}</div>`:`<div class="empty">A venda rápida funciona só no caixa de hoje.</div>`}
    </div>
    <div class="grid" style="align-content:start">
     ${isToday?`<div class="card pad"><div class="section-h"><h2 style="font-size:22px">Venda em andamento</h2>${S.pdvCart.length?`<button class="btn sm ghost" data-act="pdv-clear">Limpar</button>`:''}</div>
@@ -817,7 +819,7 @@ function vCaixa(){
    </div>
   </div>
   <div class="split even" style="margin-top:16px">
-   <div class="card pad"><div class="eyebrow" style="margin-bottom:10px">Pratos que mais saíram</div>${top.length?top.map(([id,n])=>`<div class="row" style="padding:6px 0;border-bottom:1px solid var(--line)"><img src="${foto(id)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover"><span style="flex:1;font-weight:600;font-size:14px">${esc(PM[id].nome)}</span><span class="num">${n}</span></div>`).join(''):`<div class="empty">Sem vendas neste dia.</div>`}</div>
+   <div class="card pad"><div class="eyebrow" style="margin-bottom:10px">Pratos que mais saíram</div>${top.length?top.map(([id,n])=>`<button class="rank-dish" data-open="${id}"><img src="${foto(id)}" alt="${esc(PM[id].nome)}"><span>${esc(PM[id].nome)}</span><span class="num">${n}</span></button>`).join(''):`<div class="empty">Sem vendas neste dia.</div>`}</div>
    <div class="card"><div class="pad" style="padding-bottom:0"><div class="eyebrow">Vendas registradas</div></div><div class="tablewrap"><table><thead><tr><th>#</th><th>Hora</th><th>Itens</th><th>Pagamento</th><th class="r">Total</th></tr></thead><tbody>
     ${(d.vendas||[]).slice().reverse().slice(0,40).map(v=>`<tr style="${v.status==='cancelado'?'opacity:.45;text-decoration:line-through':''}"><td class="num">${pad(v.num)}</td><td class="num">${v.hora}</td><td style="font-size:13px">${v.itens.map(i=>i.q+'× '+esc(PM[i.p]?PM[i.p].nome:i.p)+' '+i.t).join(', ')}</td><td>${esc(v.pag)}</td><td class="r num">${money(v.total)}</td></tr>`).join('')||`<tr><td colspan="5" class="empty">Nenhuma venda.</td></tr>`}
    </tbody></table></div></div>
@@ -832,9 +834,9 @@ function vReceitas(){
   return `<div class="wrap page"><div class="page-h"><div><div class="eyebrow">Calcular receitas</div><h1>Ficha técnica</h1><p>Escolha o prato e o tamanho da marmita. Você vê cada ingrediente com a quantidade exata, o custo da porção e o preço de venda recomendado.</p></div></div>
   <div class="split side">
    <div class="card pad"><label class="search" for="rq" style="margin-bottom:10px">${ico('search')}<input id="rq" type="search" placeholder="Filtrar pratos" autocomplete="off"></label>
-    <div class="reclist" id="reclist">${PRATOS.map(x=>`<button class="recbtn" data-rec="${x.id}" aria-pressed="${x.id===p.id}" data-name="${esc(x.nome.toLowerCase())}"><img src="${foto(x.id)}" alt="" loading="lazy"><span><b>${esc(x.nome)}</b><small>${esc(x.cat)} · M ${money(preco(x.id,'M'))}</small></span></button>`).join('')}</div></div>
+    <div class="reclist" id="reclist">${PRATOS.map(x=>`<button class="recbtn" data-open="${x.id}" aria-pressed="${x.id===p.id}" data-name="${esc(x.nome.toLowerCase())}"><img src="${foto(x.id)}" alt="${esc(x.nome)}" loading="lazy"><span><b>${esc(x.nome)}</b><small>${esc(x.cat)} · toque para ver ficha e comprar</small></span></button>`).join('')}</div></div>
    <div class="grid" style="align-content:start">
-    <div class="card" style="overflow:hidden"><div style="display:grid;grid-template-columns:minmax(0,1fr)"><img src="${foto(p.id)}" alt="${esc(p.nome)}" style="width:100%;aspect-ratio:21/8;object-fit:cover;display:block"></div>
+    <div class="card" style="overflow:hidden"><button class="recipe-cover" data-open="${p.id}" aria-label="Abrir ficha técnica de ${esc(p.nome)}"><img src="${foto(p.id)}" alt="${esc(p.nome)}"></button>
      <div class="pad"><div class="row" style="justify-content:space-between"><h2 style="font-family:var(--display);font-weight:700;font-size:28px">${esc(p.nome)}</h2><span class="chip porco">${esc(p.cat)}</span></div><p class="muted" style="margin:6px 0 16px">${esc(p.desc)}</p>
      <div class="bigsize">${TAMS.map(x=>{const cx=custo(p.id,x);return `<button data-rtam="${x}" aria-pressed="${x===t}"><span class="sz">${x}</span><b>${TAMANHOS[x].nome} · ${TAMANHOS[x].peso}</b><span class="muted num" style="font-size:13px">custo ${money(cx.total)}</span></button>`}).join('')}</div></div></div>
     <div class="pricebox">
@@ -992,7 +994,7 @@ function vPainel(){
   </div>
   <div class="card pad" style="margin-top:16px"><div class="row" style="justify-content:space-between;margin-bottom:8px"><div class="eyebrow">Marmitas vendidas · últimos 14 dias</div><span class="muted" style="font-size:12.5px">Hoje em destaque</span></div><div class="chart">${svg}</div></div>
   <div class="split even" style="margin-top:16px">
-   <div class="card pad"><div class="eyebrow" style="margin-bottom:10px">Campeões do mês</div>${top.length?top.map(([id,n])=>`<div class="sizebar" style="grid-template-columns:44px 1fr 46px;margin-bottom:10px"><img src="${foto(id)}" alt="" style="width:44px;height:44px;border-radius:9px;object-fit:cover"><div><div style="font-size:13.5px;margin-bottom:4px">${esc(PM[id].nome)}</div><span class="bar" style="display:block"><i style="width:${n/mt*100}%"></i></span></div><span class="num" style="text-align:right">${n}</span></div>`).join(''):`<div class="empty">Sem vendas no mês.</div>`}</div>
+   <div class="card pad"><div class="eyebrow" style="margin-bottom:10px">Campeões do mês</div>${top.length?top.map(([id,n])=>`<button class="rank-dish champion" data-open="${id}"><img src="${foto(id)}" alt="${esc(PM[id].nome)}"><span><b>${esc(PM[id].nome)}</b><i class="bar"><i style="width:${n/mt*100}%"></i></i></span><span class="num">${n}</span></button>`).join(''):`<div class="empty">Sem vendas no mês.</div>`}</div>
    <div class="grid" style="align-content:start">
     <div class="card pad"><div class="eyebrow" style="margin-bottom:10px">Mix de tamanhos no mês</div><div class="sizebars">${TAMS.map(t=>`<div class="sizebar"><span>${TAMANHOS[t].nome}</span><span class="bar"><i style="width:${rM.marmitas?rM.tam[t]/rM.marmitas*100:0}%"></i></span><span class="num" style="text-align:right">${rM.marmitas?Math.round(rM.tam[t]/rM.marmitas*100):0}%</span></div>`).join('')}</div></div>
     <div class="card pad"><div class="row" style="justify-content:space-between"><div class="eyebrow">Próximas contas</div><button class="btn sm ghost" data-go="fluxo">Ver fluxo</button></div>${contas.length?contas.map(c=>`<div class="sumrow" style="padding:7px 0;border-bottom:1px solid var(--line)"><span>${fmtDate(c.data).slice(0,5)} · ${esc(c.desc)}</span><span class="num" style="color:${c.data<hoje?'var(--bad)':'inherit'}">${money(c.valor)}</span></div>`).join(''):`<div class="empty">Nada a pagar.</div>`}</div>
@@ -1013,10 +1015,7 @@ let renderDeferred=false,keepScroll=false;
 document.addEventListener('focusout',()=>setTimeout(()=>{if(renderDeferred){renderDeferred='now';keepScroll=true;render()}},60));
 function rerender(){keepScroll=true;render()}
 
-function setupHero(){clearInterval(heroTimer);const imgs=$$('.pdia .ph img'),dots=$$('.hero-dots button');let i=0;
-  const show=n=>{i=n;imgs.forEach((im,j)=>im.classList.toggle('on',j===n));dots.forEach((d,j)=>d.classList.toggle('on',j===n));const id=imgs[n]&&imgs[n].dataset.id;if(id){$('#pdia-n').textContent=PM[id].nome;$('#pdia-b').dataset.open=id}};
-  dots.forEach(d=>d.onclick=()=>{show(+d.dataset.hero);clearInterval(heroTimer)});
-  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)heroTimer=setInterval(()=>show((i+1)%imgs.length),5200)}
+function setupHero(){clearInterval(heroTimer)}
 function setupRails(){
   const io=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.remove('pre');io.unobserve(e.target)}}),{rootMargin:'0px 0px -20px 0px',threshold:.15}):null;
   $$('.dish').forEach(d=>io?io.observe(d):d.classList.remove('pre'));
@@ -1064,6 +1063,8 @@ document.addEventListener('click',async e=>{
   if(ds.del){const mo=month(ds.m);mo.itens=mo.itens.filter(x=>x.id!==ds.del);S.confirmDel=null;saveMonth(ds.m);toast('Lançamento apagado');rerender();return}
   if(ds.pagar){if(S.demo){toast('Registre seus próprios lançamentos para usar esta ação.');return}const mo=month(ds.m);const it=mo.itens.find(x=>x.id===ds.pagar);if(it){it.status='pago';it.pagoEm=today();saveMonth(ds.m);toast('Conta marcada como paga');rerender()}return}
   switch(ds.act){
+    case 'story':openStory();break;
+    case 'story-dish':openDetail('torresmo');break;
     case 'open-cart':openCart();break;
     case 'close':closeOverlays();break;
     case 'scroll-menu':$('#menu-anchor').scrollIntoView({behavior:'smooth'});break;
@@ -1124,5 +1125,7 @@ $('#themeBtn').addEventListener('click',()=>{const r=document.documentElement;co
 })();
 </script>
 
+<link rel="stylesheet" href="enhancements.css">
+<script src="enhancements.js"></script>
 </body>
 </html>
