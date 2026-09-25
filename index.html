@@ -1006,7 +1006,7 @@ function vPainel(){
 
 /* ================= render ================= */
 function render(){
-  if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#main')&&/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)&&renderDeferred!==true){renderDeferred=true;return}
+  if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#main')&&/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)&&renderDeferred!=='now'){renderDeferred=true;return}
   renderDeferred=false;
   S.demo=!hasReal()&&!S.demoOff; if(S.demo&&!DEMO)DEMO=buildDemo();
   const html={cardapio:vCardapio,pedidos:vPedidos,caixa:vCaixa,receitas:vReceitas,custos:vCustos,fluxo:vFluxo,painel:vPainel}[S.view]();
