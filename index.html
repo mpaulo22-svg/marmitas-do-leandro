@@ -677,7 +677,7 @@ function vCardapio(){
       <span class="rule"></span>
       <ul class="checks"><li>Ingredientes frescos</li><li>Receitas equilibradas</li><li>Sabor sem complicação</li></ul>
       <p>${PRATOS.length} pratos em três tamanhos, com preço calculado em cima do custo real de cada ingrediente.</p>
-      <div class="row"><button class="btn primary" data-act="scroll-menu">Ver cardápio</button><button class="btn ghostl" data-act="story">Conheça o Leandro</button></div>
+      <div class="row"><button class="btn primary" data-act="scroll-menu">Ver cardápio</button></div>
       <div class="hero-stats">
         <div><b class="num">${hoje.marmitas}</b>marmitas hoje</div>
         <div><b class="num">${money(minP)}</b>a partir de</div>
@@ -1063,8 +1063,6 @@ document.addEventListener('click',async e=>{
   if(ds.del){const mo=month(ds.m);mo.itens=mo.itens.filter(x=>x.id!==ds.del);S.confirmDel=null;saveMonth(ds.m);toast('Lançamento apagado');rerender();return}
   if(ds.pagar){if(S.demo){toast('Registre seus próprios lançamentos para usar esta ação.');return}const mo=month(ds.m);const it=mo.itens.find(x=>x.id===ds.pagar);if(it){it.status='pago';it.pagoEm=today();saveMonth(ds.m);toast('Conta marcada como paga');rerender()}return}
   switch(ds.act){
-    case 'story':openStory();break;
-    case 'story-dish':openDetail('torresmo');break;
     case 'open-cart':openCart();break;
     case 'close':closeOverlays();break;
     case 'scroll-menu':$('#menu-anchor').scrollIntoView({behavior:'smooth'});break;
