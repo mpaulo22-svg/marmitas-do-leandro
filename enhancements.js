@@ -89,24 +89,33 @@ renderModal=function(){
     </div></div>`;
   $('#modal .sheet').scrollTop=pos;
 };
-function openStory(){
-  S.detail=null;
-  $('#modal').innerHTML=`<div class="sheet story-sheet" role="dialog" aria-modal="true" aria-label="Conheça as Marmitas do Leandro">
-    <div class="story-photo"><img src="img/leandro.svg" alt="Leandro na cozinha, segurando uma marmita, com o cardápio da casa ao fundo">
-      <button class="closex" data-act="close" aria-label="Fechar">${ico('x')}</button>
-      <button class="story-hotspot board-hotspot" data-story="board">Comida de verdade</button>
-      <button class="story-hotspot dish-hotspot" data-act="story-dish">Explorar a marmita</button>
-    </div><div class="sheet-body story-copy"><span class="eyebrow">Marmitas do Leandro</span><h2>Comida de verdade todo dia</h2>
-      <p>Explore os detalhes da foto e descubra o que vai para a sua marmita.</p>
-      <div class="story-tabs"><button data-story="fresh">Ingredientes frescos</button><button data-story="balanced">Receitas equilibradas</button><button data-story="simple">Sabor sem complicação</button></div>
-      <div id="story-feedback" class="story-feedback">Toque nos destaques da foto ou nas frases para explorar.</div>
-      <button class="btn primary" data-act="story-dish">Ver a ficha técnica da marmita</button>
-    </div></div>`;
-  $('#modal').classList.add('on');$('#scrim').classList.add('on');$('#modal').setAttribute('aria-hidden','false');
+
+// A mesma tabela vira pares "campo / valor" no celular, sem rolagem lateral.
+function rotularTabelas(root){
+  if(!root)return;
+  root.querySelectorAll('table').forEach(table=>{
+    const headings=[...table.querySelectorAll('thead tr:first-child th')].map(th=>th.textContent.trim());
+    table.querySelectorAll('tbody tr, tfoot tr').forEach(row=>{
+      let column=0;
+      [...row.children].forEach(cell=>{
+        const span=Number(cell.getAttribute('colspan'))||1;
+        if(!cell.dataset.label){
+          const label=headings.slice(column,column+span).filter(Boolean).join(' / ');
+          cell.dataset.label=label||'Detalhe';
+        }
+        column+=span;
+      });
+    });
+  });
 }
-const STORY_COPY={board:"Comida de verdade todo dia: ingredientes frescos, receitas equilibradas e sabor sem complicação.",fresh:"Ingredientes frescos: a ficha de cada prato mostra os ingredientes e as quantidades por tamanho.",balanced:"Receitas equilibradas: confira o preparo e a estimativa nutricional antes de pedir.",simple:"Sabor sem complicação: escolha P, M ou G e converse diretamente com o Leandro para confirmar o pedido."};
-document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-story]');if(!el)return;
-  const box=$('#story-feedback');if(box)box.textContent=STORY_COPY[el.dataset.story]||STORY_COPY.board;
-  $$('.story-tabs button').forEach(b=>b.setAttribute('aria-pressed',b===el));
+function atualizarTabelas(){
+  rotularTabelas(document.querySelector('#main'));
+  rotularTabelas(document.querySelector('#modal'));
+  rotularTabelas(document.querySelector('#drawer'));
+}
+const observadorTabelas=new MutationObserver(atualizarTabelas);
+['#main','#modal','#drawer'].forEach(selector=>{
+  const root=document.querySelector(selector);
+  if(root)observadorTabelas.observe(root,{childList:true,subtree:true});
 });
+atualizarTabelas();
