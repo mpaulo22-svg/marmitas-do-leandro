@@ -1082,7 +1082,7 @@ document.addEventListener('click',async e=>{
     case 'cancel-del':S.confirmDel=null;rerender();break;
   }
 });
-$('#scrim').addEventListener('click',closeOverlays);
+$('#scrim').addEventListener('click',()=>closeOverlays());
 addEventListener('keydown',e=>{if(e.key==='Escape')closeOverlays()});
 $('#cartBtn').addEventListener('click',openCart);
 document.addEventListener('input',e=>{const el=e.target;
